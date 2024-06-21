@@ -14,8 +14,8 @@ type StockData struct {
 	ListDate string
 }
 
-func GetAllStockData()  {
-	response := utils.GetAllAStock()
+func GetAllStockData(requestUrl string, requestToken string)  {
+	response := utils.GetAllAStock(requestUrl, requestToken)
 
 	// 连接数据库
 	db, err := sql.Open("mysql", "root:931102@tcp(127.0.0.1:3306)/astock")
@@ -34,7 +34,7 @@ func GetAllStockData()  {
 	}
 }
 
-func GetStockDailyData()  {
+func GetStockDailyData(requestUrl string, requestToken string)  {
 	// 连接数据库
 	db, err := sql.Open("mysql", "root:931102@tcp(127.0.0.1:3306)/astock")
 	if err != nil {
@@ -81,7 +81,7 @@ func GetStockDailyData()  {
 					time.Sleep(1 * time.Minute)
 				}
 
-				response := utils.GetDailAStock(stockdata.TsCode,stockdata.ListDate,dateString)
+				response := utils.GetDailAStock(requestUrl, requestToken, stockdata.TsCode,stockdata.ListDate,dateString)
 				for _, items := range response.Data.Items {
 					_, err = db.Exec("INSERT INTO astock_daily (ts_code, trade_date, open, high, low, close, pre_close, `change`, pct_chg, vol, amount,created_on, modified_on) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", items[0], items[1], items[2], items[3], items[4], items[5], items[6], items[7], items[8], items[9], items[10], int(time.Now().Unix()), int(time.Now().Unix()))
 					if err != nil {

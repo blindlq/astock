@@ -24,11 +24,8 @@ type Response struct {
 	Data ResponseData `json:"data"`
 }
 
-var requesToken = "5086fef865a2b51a40d98cac2ea560a3e11c384b6e9ae1bab434b647"
-var requestUrl = "http://api.tushare.pro"
-
 //股票基础信息
-func GetAllAStock()  Response {
+func GetAllAStock(requestUrl string, requestToken string) Response {
 	//请求的数据-股票基础信息-stock_basic
 	//构建请求体数据
 	//构建动态的params参数
@@ -40,15 +37,15 @@ func GetAllAStock()  Response {
 	// 构建请求体数据
 	requestBody := RequestBody{
 		APIName: "stock_basic",
-		Token:   requesToken,
+		Token:   requestToken,
 		Params:  params,
 		Fields:  fields,
 	}
 
-	return sendRequest(requestBody)
+	return sendRequest(requestUrl, requestBody)
 }
 
-func GetDailAStock(tsCode string, startDate string, endDate string) Response {
+func GetDailAStock(requestUrl string, requestToken string, tsCode string, startDate string, endDate string) Response {
 	params := make(map[string]interface{})
 	params["start_date"] = startDate
 	params["end_date"] = endDate
@@ -59,15 +56,15 @@ func GetDailAStock(tsCode string, startDate string, endDate string) Response {
 	// 构建请求体数据
 	requestBody := RequestBody{
 		APIName: "daily",
-		Token:   requesToken,
+		Token:   requestToken,
 		Params:  params,
 		Fields:  fields,
 	}
 
-	return sendRequest(requestBody)
+	return sendRequest(requestUrl, requestBody)
 }
 
-func sendRequest(requestBody RequestBody) Response {
+func sendRequest(requestUrl string, requestBody RequestBody) Response {
 	// 将请求体序列化为JSON字节流
 	requestBodyBytes, err := json.Marshal(requestBody)
 	if err != nil {

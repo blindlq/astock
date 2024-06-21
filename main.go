@@ -2,20 +2,24 @@ package main
 
 import (
 	"astock/stock_data"
-	"astock/utils"
-	"database/sql"
+	//"astock/stock_data"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"log"
-	"sync"
-	"time"
-	//"net/http"
-	//"time"
+	"github.com/spf13/viper"
 )
 
+func init()  {
+	viper.SetConfigName("config")
+	viper.AddConfigPath("configs/")
+	viper.SetConfigType("yaml")
+	err := viper.ReadInConfig()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
 
 func main() {
-	stock_data.GetAllStockData()
-	stock_data.GetStockDailyData()
+	stock_data.GetAllStockData(viper.GetString("RequestConfig.Url"),viper.GetString("RequestConfig.Token"))
+	stock_data.GetStockDailyData(viper.GetString("RequestConfig.Url"),viper.GetString("RequestConfig.Token"))
 }
 
