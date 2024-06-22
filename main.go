@@ -1,25 +1,50 @@
 package main
 
 import (
-	"astock/stock_data"
-	//"astock/stock_data"
-	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/spf13/viper"
+	"astock/global"
+	"astock/pkg/setting"
+	"astock/scripts"
+	"flag"
+	"log"
+	"strings"
+)
+
+var (
+	config string
 )
 
 func init()  {
-	viper.SetConfigName("config")
-	viper.AddConfigPath("configs/")
-	viper.SetConfigType("yaml")
-	err := viper.ReadInConfig()
+	err := setupFlag()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("init.setupFlag err: %v", err)
+	}
+
+	err = setupSetting()
+	if err != nil {
+		log.Fatalf("init.setupSetting err: %v", err)
 	}
 }
 
 func main() {
-	stock_data.GetAllStockData(viper.GetString("RequestConfig.Url"),viper.GetString("RequestConfig.Token"))
-	stock_data.GetStockDailyData(viper.GetString("RequestConfig.Url"),viper.GetString("RequestConfig.Token"))
+	//fmt.Println(global.ScriptsSetting.DailyHotUrl)
+	//scripts.GetAllStockData(viper.GetString("RequestConfig.Url"),viper.GetString("RequestConfig.Token"))
+	//scripts.GetStockDailyData(viper.GetString("RequestConfig.Url"),viper.GetString("RequestConfig.Token"))
+	scripts.GetStockDailyHotData()
+}
+
+func setupFlag() error {
+	flag.StringVar(&config,"config","configs/","指定配置文件路径")
+	flag.Parse()
+
+	return nil
+}
+
+func setupSetting() error {
+	s, err := setting.NewSetting(strings.Split(config,",")...)
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("RequestConfig", &global.ScriptsSetting)
+	return nil
 }
 

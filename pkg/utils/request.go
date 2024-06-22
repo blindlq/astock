@@ -108,3 +108,45 @@ func sendRequest(requestUrl string, requestBody RequestBody) Response {
 
 	return response
 }
+
+// SendGetRequest 发送get请求
+func SendGetRequest(url string) []byte {
+	// 创建 HTTP 客户端
+	client := &http.Client{}
+
+	// 创建 GET 请求
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Printf("创建请求失败：%s\n", err)
+		return nil
+	}
+
+	// 添加请求头信息
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123 Safari/537.36")
+
+	// 发送请求
+	response, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("请求失败：%s\n", err)
+		return nil
+	}
+	defer response.Body.Close()
+
+	//// 发起 GET 请求
+	//response, err := http.Get(url)
+	//if err != nil {
+	//	fmt.Printf("请求失败：%s\n", err)
+	//	return nil
+	//}
+	//defer response.Body.Close()
+	//
+	// 读取响应内容
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("读取响应失败：%s\n", err)
+		return nil
+	}
+
+	// 将响应内容转换为字符串并输出
+	return body
+}
